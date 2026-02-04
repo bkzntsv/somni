@@ -1,0 +1,9 @@
+# ktlint configuration
+# https://pinterest.github.io/ktlint/latest/rules/standard/
+
+editorConfig:
+  indentSize: 4
+  maxLineLength: 120
+
+disabled_rules:
+  # - "import-ordering"

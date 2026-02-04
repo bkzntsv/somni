@@ -1,0 +1,21 @@
+# SwiftLint configuration for iosApp and watchApp
+# https://github.com/realm/SwiftLint
+
+disabled_rules:
+  # - "line_length"
+
+opt_in_rules:
+  - "empty_count"
+  - "explicit_init"
+
+excluded:
+  - "iosApp/Somni/Resources"
+  - "watchApp/SomniWatch/Resources"
+  - "**/Generated"
+  - "**/.build"
+
+line_length:
+  warning: 120
+  error: 150
+
+reporter: "xcode"
