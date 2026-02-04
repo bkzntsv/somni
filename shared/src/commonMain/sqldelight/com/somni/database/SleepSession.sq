@@ -1,0 +1,63 @@
+CREATE TABLE sleep_sessions (
+    session_id TEXT PRIMARY KEY NOT NULL,
+    baby_id TEXT NOT NULL,
+    start_time INTEGER NOT NULL,
+    end_time INTEGER,
+    duration_minutes INTEGER,
+    quality_score REAL,
+    timezone_offset INTEGER NOT NULL,
+    sync_status TEXT NOT NULL, -- PENDING, SYNCED, FAILED
+    initiator_device_id TEXT NOT NULL,
+    modified_at INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE INDEX idx_baby_start_time ON sleep_sessions(baby_id, start_time DESC);
+CREATE INDEX idx_sync_status ON sleep_sessions(sync_status);
+
+-- Queries
+selectAll:
+SELECT * FROM sleep_sessions;
+
+selectById:
+SELECT * FROM sleep_sessions WHERE session_id = ?;
+
+selectByBabyId:
+SELECT * FROM sleep_sessions 
+WHERE baby_id = ? 
+ORDER BY start_time DESC;
+
+selectRecentByBabyId:
+SELECT * FROM sleep_sessions 
+WHERE baby_id = ? AND start_time >= ?
+ORDER BY start_time DESC;
+
+selectPendingSync:
+SELECT * FROM sleep_sessions WHERE sync_status = 'PENDING';
+
+insertSession:
+INSERT INTO sleep_sessions (
+    session_id, baby_id, start_time, end_time, duration_minutes,
+    quality_score, timezone_offset, sync_status, initiator_device_id,
+    modified_at, created_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateSession:
+UPDATE sleep_sessions 
+SET end_time = ?, 
+    duration_minutes = ?, 
+    quality_score = ?,
+    modified_at = ?
+WHERE session_id = ?;
+
+updateSyncStatus:
+UPDATE sleep_sessions 
+SET sync_status = ?, 
+    modified_at = ?
+WHERE session_id = ?;
+
+deleteSession:
+DELETE FROM sleep_sessions WHERE session_id = ?;
+
+deleteAll:
+DELETE FROM sleep_sessions;

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "schedule": ["every weekday"],
+  "timezone": "Europe/Moscow",
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group Kotlin ecosystem updates",
+      "matchPackagePatterns": ["^org\\.jetbrains\\.kotlin", "^org\\.jetbrains\\.kotlinx"],
+      "groupName": "kotlin"
+    },
+    {
+      "description": "Group Gradle and plugin updates",
+      "matchPackagePatterns": ["^org\\.jetbrains\\.kotlin.*plugin", "com\\.android", "app\\.cash\\.sqldelight"],
+      "matchDepTypes": ["plugin"],
+      "groupName": "gradle-plugins"
+    },
+  ],
+  "gradle": {
+    "enabled": true
+  },
+  "gradle-wrapper": {
+    "enabled": true
+  },
+  "prConcurrentLimit": 5,
+  "prCreation": "not-pending"
+}

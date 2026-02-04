@@ -1,0 +1,21 @@
+CREATE TABLE user_settings (
+    key TEXT PRIMARY KEY NOT NULL,
+    value TEXT NOT NULL
+);
+
+-- Queries
+selectAll:
+SELECT * FROM user_settings;
+
+selectByKey:
+SELECT value FROM user_settings WHERE key = ?;
+
+insertOrUpdate:
+INSERT OR REPLACE INTO user_settings (key, value)
+VALUES (?, ?);
+
+deleteSetting:
+DELETE FROM user_settings WHERE key = ?;
+
+deleteAll:
+DELETE FROM user_settings;

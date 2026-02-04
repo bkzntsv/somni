@@ -1,0 +1,44 @@
+CREATE TABLE baby_profiles (
+    baby_id TEXT PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    birthdate INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE TABLE active_baby_profile (
+    user_id TEXT PRIMARY KEY NOT NULL,
+    active_baby_id TEXT NOT NULL,
+    FOREIGN KEY (active_baby_id) REFERENCES baby_profiles(baby_id)
+);
+
+-- Queries
+selectAllProfiles:
+SELECT * FROM baby_profiles ORDER BY created_at DESC;
+
+selectProfileById:
+SELECT * FROM baby_profiles WHERE baby_id = ?;
+
+selectActiveProfile:
+SELECT bp.* 
+FROM baby_profiles bp
+INNER JOIN active_baby_profile abp ON bp.baby_id = abp.active_baby_id
+WHERE abp.user_id = ?;
+
+insertProfile:
+INSERT INTO baby_profiles (baby_id, name, birthdate, created_at)
+VALUES (?, ?, ?, ?);
+
+updateProfile:
+UPDATE baby_profiles 
+SET name = ?, birthdate = ?
+WHERE baby_id = ?;
+
+deleteProfile:
+DELETE FROM baby_profiles WHERE baby_id = ?;
+
+setActiveProfile:
+INSERT OR REPLACE INTO active_baby_profile (user_id, active_baby_id)
+VALUES (?, ?);
+
+deleteActiveProfile:
+DELETE FROM active_baby_profile WHERE user_id = ?;
