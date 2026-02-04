@@ -1,0 +1,781 @@
+openapi: 3.2.0
+info:
+  title: Somni Baby Sleep Tracker API
+  description: |
+    RESTful API for Somni — sleep tracking, cloud sync, AI recommendations, and user profile management.
+    All timestamps are ISO-8601 in UTC. Authentication uses JWT (Bearer token).
+  version: 1.0.0
+  contact:
+    name: Somni Team
+
+servers:
+  - url: /api/v1
+    description: API v1 base path (relative to host)
+  - url: https://api.somni.example.com/api/v1
+    description: Production (example)
+
+tags:
+  - name: auth
+    description: Authentication (no JWT required)
+  - name: sleep-sessions
+    description: Sleep session CRUD and sync
+  - name: ai-recommendations
+    description: AI sleep analysis and feedback
+  - name: profile
+    description: User profile, babies, settings, subscription
+  - name: export
+    description: GDPR data export and deletion
+
+paths:
+  # ---------- Authentication (no JWT) ----------
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Login
+      description: Exchange credentials for access and refresh tokens.
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: parent@example.com
+              password: "***"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      summary: Refresh access token
+      description: Issue new access token using refresh token. Refresh token remains valid until revoked.
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: New token pair
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------- Sleep sessions ----------
+  /sleep-sessions:
+    get:
+      tags: [sleep-sessions]
+      summary: List sleep sessions
+      description: Returns sessions for the authenticated user. Supports filtering by baby and incremental sync.
+      operationId: getSleepSessions
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: babyId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter by baby profile ID
+        - name: since
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Return sessions modified after this timestamp (for incremental sync)
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: List of sleep sessions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SleepSessionList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+    post:
+      tags: [sleep-sessions]
+      summary: Create sleep session
+      description: Create a new sleep session. Used for upload during sync.
+      operationId: createSleepSession
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SleepSessionCreate'
+            example:
+              sessionId: "550e8400-e29b-41d4-a716-446655440000"
+              babyId: "660e8400-e29b-41d4-a716-446655440001"
+              startTime: "2025-02-04T10:00:00.000Z"
+              endTime: "2025-02-04T11:30:00.000Z"
+              durationMinutes: 90
+              qualityScore: 0.85
+              timezoneOffset: 180
+              initiatorDeviceId: "watch-uuid-1"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SleepSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Session with this ID already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /sleep-sessions/{sessionId}:
+    parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [sleep-sessions]
+      summary: Get sleep session by ID
+      operationId: getSleepSession
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Sleep session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SleepSession'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [sleep-sessions]
+      summary: Update sleep session
+      description: Full update. Used for sync and manual corrections.
+      operationId: updateSleepSession
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SleepSessionUpdate'
+      responses:
+        '200':
+          description: Updated session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SleepSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [sleep-sessions]
+      summary: Delete sleep session
+      operationId: deleteSleepSession
+      security: [{ bearerAuth: [] }]
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------- AI recommendations ----------
+  /ai-recommendations:
+    get:
+      tags: [ai-recommendations]
+      summary: List AI recommendations
+      description: Returns recommendations for the authenticated user (e.g. last 14 days). Premium feature.
+      operationId: getAIRecommendations
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: babyId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: List of AI recommendations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIRecommendationList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Premium subscription required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /ai-recommendations/{recommendationId}/feedback:
+    parameters:
+      - name: recommendationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [ai-recommendations]
+      summary: Submit feedback for a recommendation
+      description: Mark recommendation as helpful or not helpful.
+      operationId: submitRecommendationFeedback
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackRequest'
+            example:
+              helpful: true
+      responses:
+        '204':
+          description: Feedback recorded
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------- User profile and subscription ----------
+  /profile:
+    get:
+      tags: [profile]
+      summary: Get user profile
+      description: Returns user profile, baby profiles, and settings.
+      operationId: getUserProfile
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: User profile with babies and settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [profile]
+      summary: Update user profile
+      description: Update settings and/or baby profiles. Partial update supported.
+      operationId: updateUserProfile
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileUpdate'
+      responses:
+        '200':
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags: [profile]
+      summary: Request account deletion (GDPR)
+      description: Schedules deletion of all user data within 30 days. Can be cancelled within grace period.
+      operationId: deleteUserProfile
+      security: [{ bearerAuth: [] }]
+      responses:
+        '202':
+          description: Deletion scheduled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deletionScheduledAt:
+                    type: string
+                    format: date-time
+                  message:
+                    type: string
+                    example: "Account deletion scheduled. Data will be removed within 30 days."
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /profile/sync-timestamp:
+    patch:
+      tags: [profile]
+      summary: Update last sync timestamp
+      description: Used by clients after successful sync to reduce server write load.
+      operationId: updateSyncTimestamp
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [timestamp]
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+      responses:
+        '204':
+          description: Updated
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------- Export (GDPR) ----------
+  /export:
+    get:
+      tags: [export]
+      summary: Export all user data (GDPR)
+      description: Returns complete user data as JSON (profile, sleep logs, recommendations, baby profiles).
+      operationId: exportUserData
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: JSON export
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataExport'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token (valid 7 days). Obtain via POST /auth/login.
+
+  responses:
+    BadRequest:
+      description: Invalid request body or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: VALIDATION_ERROR
+            message: "startTime must be before endTime"
+            timestamp: "2025-02-04T12:00:00Z"
+    Unauthorized:
+      description: Missing or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: UNAUTHORIZED
+            message: "Invalid or expired token"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    RateLimitExceeded:
+      description: Rate limit exceeded (100 requests per minute per user)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: RATE_LIMIT_EXCEEDED
+            message: "Too many requests. Limit 100 per minute."
+
+  schemas:
+    ApiError:
+      type: object
+      required: [code, message, timestamp]
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+
+    # ----- Auth -----
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 1
+
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    TokenPair:
+      type: object
+      required: [accessToken, refreshToken, expiresIn]
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+        refreshToken:
+          type: string
+          description: Opaque refresh token
+        expiresIn:
+          type: integer
+          description: Access token TTL in seconds (e.g. 604800 for 7 days)
+
+    # ----- Sleep session -----
+    SyncStatus:
+      type: string
+      enum: [PENDING, SYNCED, FAILED]
+
+    SleepSession:
+      type: object
+      required:
+        - sessionId
+        - babyId
+        - startTime
+        - timezoneOffset
+        - syncStatus
+        - initiatorDeviceId
+        - modifiedAt
+        - createdAt
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        babyId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+          nullable: true
+        durationMinutes:
+          type: integer
+          nullable: true
+          minimum: 0
+        qualityScore:
+          type: number
+          format: float
+          nullable: true
+          minimum: 0
+          maximum: 1
+        timezoneOffset:
+          type: integer
+          description: Offset in minutes from UTC
+        syncStatus:
+          $ref: '#/components/schemas/SyncStatus'
+        initiatorDeviceId:
+          type: string
+        modifiedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    SleepSessionCreate:
+      type: object
+      required:
+        - sessionId
+        - babyId
+        - startTime
+        - timezoneOffset
+        - initiatorDeviceId
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        babyId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+          nullable: true
+        durationMinutes:
+          type: integer
+          nullable: true
+          minimum: 0
+        qualityScore:
+          type: number
+          format: float
+          nullable: true
+          minimum: 0
+          maximum: 1
+        timezoneOffset:
+          type: integer
+        initiatorDeviceId:
+          type: string
+
+    SleepSessionUpdate:
+      type: object
+      properties:
+        endTime:
+          type: string
+          format: date-time
+          nullable: true
+        durationMinutes:
+          type: integer
+          nullable: true
+          minimum: 0
+        qualityScore:
+          type: number
+          format: float
+          nullable: true
+          minimum: 0
+          maximum: 1
+        timezoneOffset:
+          type: integer
+        initiatorDeviceId:
+          type: string
+
+    SleepSessionList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SleepSession'
+        nextSince:
+          type: string
+          format: date-time
+          description: Cursor for next page (if more results)
+
+    # ----- AI recommendation -----
+    FeedbackType:
+      type: string
+      enum: [helpful, not_helpful]
+
+    AIRecommendation:
+      type: object
+      required:
+        - recommendationId
+        - babyId
+        - summary
+        - detailedAnalysis
+        - suggestedActions
+        - confidence
+        - generatedAt
+      properties:
+        recommendationId:
+          type: string
+          format: uuid
+        babyId:
+          type: string
+          format: uuid
+        summary:
+          type: string
+          maxLength: 100
+        detailedAnalysis:
+          type: string
+          maxLength: 500
+        suggestedActions:
+          type: array
+          items:
+            type: string
+          maxItems: 4
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        feedback:
+          $ref: '#/components/schemas/FeedbackType'
+          nullable: true
+        generatedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    FeedbackRequest:
+      type: object
+      required: [helpful]
+      properties:
+        helpful:
+          type: boolean
+
+    AIRecommendationList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AIRecommendation'
+
+    # ----- Profile & subscription -----
+    UserProfile:
+      type: object
+      required: [userId, babyProfiles, settings]
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+          format: email
+        subscriptionStatus:
+          type: string
+          enum: [free, premium, expired]
+        subscriptionExpiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastSyncTimestamp:
+          type: string
+          format: date-time
+          nullable: true
+        babyProfiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/BabyProfile'
+        settings:
+          $ref: '#/components/schemas/UserSettings'
+
+    BabyProfile:
+      type: object
+      required: [babyId, name, birthdate, createdAt]
+      properties:
+        babyId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+          default: true
+
+    UserSettings:
+      type: object
+      properties:
+        hapticsEnabled:
+          type: boolean
+          default: true
+        notificationsEnabled:
+          type: boolean
+          default: true
+        quietHoursStart:
+          type: string
+          pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+          example: "22:00"
+        quietHoursEnd:
+          type: string
+          pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+          example: "07:00"
+        preferredVolume:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          default: 0.5
+
+    UserProfileUpdate:
+      type: object
+      properties:
+        babyProfiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/BabyProfile'
+        settings:
+          $ref: '#/components/schemas/UserSettings'
+
+    # ----- Export -----
+    DataExport:
+      type: object
+      required: [exportedAt, user, sleepLogs, recommendations, babyProfiles]
+      properties:
+        exportedAt:
+          type: string
+          format: date-time
+        user:
+          type: object
+          description: User document (anonymised if needed)
+        sleepLogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SleepSession'
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AIRecommendation'
+        babyProfiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/BabyProfile'

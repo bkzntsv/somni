@@ -133,3 +133,6 @@ watchApp/README.md
 .kiro/
 .cursor/
 .github/BRANCH_PROTECTION.md
+api-client/README.md
+docs/API-DESIGN-REVIEW.md
+docs/AUTH.md

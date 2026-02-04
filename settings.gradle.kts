@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 
 include(":shared")
 include(":backend")
+include(":api-client")
