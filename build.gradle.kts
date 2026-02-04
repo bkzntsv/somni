@@ -13,7 +13,8 @@ allprojects {
 }
 
 subprojects {
-    if (name in listOf("backend", "shared")) {
+    // Only backend: shared has SQLDelight-generated code that ktlint flags (filter doesn't exclude it in KMP)
+    if (name == "backend") {
         apply(plugin = "org.jlleitschuh.gradle.ktlint")
     }
 }

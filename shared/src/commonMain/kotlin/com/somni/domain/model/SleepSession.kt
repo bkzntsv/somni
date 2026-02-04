@@ -13,11 +13,11 @@ data class SleepSession(
     val syncStatus: SyncStatus,
     val initiatorDeviceId: String,
     val modifiedAt: Instant,
-    val createdAt: Instant
+    val createdAt: Instant,
 )
 
 enum class SyncStatus {
     PENDING,
     SYNCED,
-    FAILED
+    FAILED,
 }

@@ -14,11 +14,11 @@ kotlin {
     //         }
     //     }
     // }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "Shared"
@@ -26,7 +26,7 @@ kotlin {
             export(Dependencies.koinCore)
         }
     }
-    
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -43,14 +43,14 @@ kotlin {
                 implementation(Dependencies.sqlDelightCoroutinesExt)
             }
         }
-        
+
         val commonTest by getting {
             dependencies {
                 implementation(Dependencies.kotlinTest)
                 implementation(Dependencies.coroutinesTest)
             }
         }
-        
+
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -59,13 +59,13 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
-            
+
             dependencies {
                 implementation(Dependencies.ktorClientDarwin)
                 implementation(Dependencies.sqlDelightNativeDriver)
             }
         }
-        
+
         // Android source set - uncomment when Android support is enabled
         // val androidMain by getting {
         //     dependencies {
@@ -81,11 +81,11 @@ kotlin {
 // android {
 //     namespace = "com.somni.shared"
 //     compileSdk = 34
-//     
+//
 //     defaultConfig {
 //         minSdk = 26
 //     }
-//     
+//
 //     compileOptions {
 //         sourceCompatibility = JavaVersion.VERSION_17
 //         targetCompatibility = JavaVersion.VERSION_17
