@@ -13,13 +13,8 @@ data class BabyProfile(
     val createdAt: Instant,
 ) {
     fun ageInWeeks(): Int {
-        val now =
-            Clock.System
-                .now()
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-                .date
-        val daysSinceBirth = (now.toEpochDays() - birthdate.toEpochDays())
-        return (daysSinceBirth / 7)
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        return (today.toEpochDays() - birthdate.toEpochDays()) / 7
     }
 
     fun ageInMonths(): Int = ageInWeeks() / 4

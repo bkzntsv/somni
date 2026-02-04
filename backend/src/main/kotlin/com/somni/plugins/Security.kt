@@ -7,28 +7,31 @@ import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 
+private fun Application.jwtConfig(
+    path: String,
+    default: String,
+): String = environment.config.propertyOrNull(path)?.getString() ?: default
+
 fun Application.configureSecurity() {
-    val jwtSecret = environment.config.propertyOrNull("jwt.secret")?.getString() ?: "default-secret-change-in-production"
-    val jwtIssuer = environment.config.propertyOrNull("jwt.issuer")?.getString() ?: "somni-backend"
-    val jwtAudience = environment.config.propertyOrNull("jwt.audience")?.getString() ?: "somni-app"
-    val jwtRealm = environment.config.propertyOrNull("jwt.realm")?.getString() ?: "Somni API"
+    val secret = jwtConfig("jwt.secret", "default-secret-change-in-production")
+    val issuer = jwtConfig("jwt.issuer", "somni-backend")
+    val audience = jwtConfig("jwt.audience", "somni-app")
+    val realm = jwtConfig("jwt.realm", "Somni API")
 
     authentication {
         jwt("auth-jwt") {
-            realm = jwtRealm
+            this.realm = realm
             verifier(
                 JWT
-                    .require(Algorithm.HMAC256(jwtSecret))
-                    .withIssuer(jwtIssuer)
-                    .withAudience(jwtAudience)
+                    .require(Algorithm.HMAC256(secret))
+                    .withIssuer(issuer)
+                    .withAudience(audience)
                     .build(),
             )
             validate { credential ->
-                if (credential.payload.getClaim("userId").asString() != null) {
-                    JWTPrincipal(credential.payload)
-                } else {
-                    null
-                }
+                val userId = credential.payload.getClaim("userId").asString()
+                if (userId == null) return@validate null
+                JWTPrincipal(credential.payload)
             }
         }
     }

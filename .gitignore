@@ -136,3 +136,5 @@ watchApp/README.md
 api-client/README.md
 docs/API-DESIGN-REVIEW.md
 docs/AUTH.md
+docs/DATA-RETENTION-GDPR.md
+docs/MONGODB-SCHEMA.md
