@@ -14,11 +14,11 @@ import io.ktor.server.routing.routing
 fun Application.configureRouting() {
     routing {
         get("/") {
-            call.respondText("Somni Backend API v1.0.0", ContentType.Text.Plain)
+            context.respondText("Somni Backend API v1.0.0", ContentType.Text.Plain)
         }
 
         get("/health") {
-            call.respond(
+            context.respond(
                 HttpStatusCode.OK,
                 mapOf(
                     "status" to "healthy",
@@ -30,18 +30,18 @@ fun Application.configureRouting() {
         route("/api/v1") {
             route("/sleep-sessions") {
                 get {
-                    call.respondText("GET sleep sessions - Not implemented", ContentType.Text.Plain)
+                    context.respondText("GET sleep sessions - Not implemented", ContentType.Text.Plain)
                 }
                 post {
-                    call.respondText("POST sleep session - Not implemented", ContentType.Text.Plain)
+                    context.respondText("POST sleep session - Not implemented", ContentType.Text.Plain)
                 }
             }
             route("/profile") {
                 get {
-                    call.respondText("GET profile - Not implemented", ContentType.Text.Plain)
+                    context.respondText("GET profile - Not implemented", ContentType.Text.Plain)
                 }
                 put {
-                    call.respondText("PUT profile - Not implemented", ContentType.Text.Plain)
+                    context.respondText("PUT profile - Not implemented", ContentType.Text.Plain)
                 }
             }
         }
