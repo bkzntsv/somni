@@ -5,6 +5,7 @@ plugins {
 }
 
 kotlin {
+    jvm()
     // Android target is optional - uncomment when Android support is needed
     // Requires ANDROID_HOME environment variable or local.properties with sdk.dir
     // androidTarget {
@@ -48,6 +49,12 @@ kotlin {
             dependencies {
                 implementation(Dependencies.kotlinTest)
                 implementation(Dependencies.coroutinesTest)
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(Dependencies.kotlinTestJunit)
             }
         }
 
@@ -99,4 +106,11 @@ sqldelight {
             generateAsync.set(true)
         }
     }
+}
+
+// Alias so "./gradlew :shared:test" runs JVM tests (commonTest + jvmTest)
+tasks.register("test") {
+    dependsOn("jvmTest")
+    group = "verification"
+    description = "Runs shared module tests (JVM target, includes commonTest)"
 }

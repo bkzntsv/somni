@@ -37,6 +37,9 @@ jobs:
       - name: Run backend tests
         run: ./gradlew :backend:test --no-daemon --stacktrace
 
+      - name: Run shared (KMP) unit tests
+        run: ./gradlew :shared:jvmTest --no-daemon --stacktrace
+
       - name: Build shared (KMP) module
         run: ./gradlew :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace
 

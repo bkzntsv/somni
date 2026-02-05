@@ -30,7 +30,7 @@ fun Application.configureSecurity() {
             )
             validate { credential ->
                 val userId = credential.payload.getClaim("userId").asString()
-                if (userId == null) return@validate null
+                if (userId.isNullOrBlank()) return@validate null
                 JWTPrincipal(credential.payload)
             }
         }
