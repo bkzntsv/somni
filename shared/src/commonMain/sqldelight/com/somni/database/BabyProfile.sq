@@ -42,3 +42,12 @@ VALUES (?, ?);
 
 deleteActiveProfile:
 DELETE FROM active_baby_profile WHERE user_id = ?;
+
+deleteActiveByBabyId:
+DELETE FROM active_baby_profile WHERE active_baby_id = ?;
+
+deleteAllActiveProfiles:
+DELETE FROM active_baby_profile;
+
+deleteAllProfiles:
+DELETE FROM baby_profiles;

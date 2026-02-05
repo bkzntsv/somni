@@ -52,6 +52,12 @@ kotlin {
             }
         }
 
+        val jvmMain by getting {
+            dependencies {
+                implementation(Dependencies.SqlDelight.sqliteDriver)
+            }
+        }
+
         val jvmTest by getting {
             dependencies {
                 implementation(Dependencies.kotlinTestJunit)
@@ -103,7 +109,7 @@ sqldelight {
     databases {
         create("SomniDatabase") {
             packageName.set("com.somni.database")
-            generateAsync.set(true)
+            generateAsync.set(false)
         }
     }
 }

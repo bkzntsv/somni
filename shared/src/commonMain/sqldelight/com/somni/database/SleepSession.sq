@@ -50,6 +50,13 @@ SET end_time = ?,
     modified_at = ?
 WHERE session_id = ?;
 
+updateFullSession:
+UPDATE sleep_sessions 
+SET baby_id = ?, start_time = ?, end_time = ?, duration_minutes = ?,
+    quality_score = ?, timezone_offset = ?, sync_status = ?, initiator_device_id = ?,
+    modified_at = ?, created_at = ?
+WHERE session_id = ?;
+
 updateSyncStatus:
 UPDATE sleep_sessions 
 SET sync_status = ?, 

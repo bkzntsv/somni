@@ -6,7 +6,7 @@ object Versions {
     const val ktor = "2.3.7"
     const val koin = "3.5.3"
     const val koinKmp = "1.1.2"
-    const val sqlDelight = "2.0.1"
+    const val sqlDelight = "2.2.1"
     const val sqlCipher = "4.5.4"
     const val mongoDriver = "4.11.1"
     const val jwt = "4.4.0"
@@ -43,6 +43,10 @@ object Dependencies {
     const val sqlDelightCoroutinesExt = "app.cash.sqldelight:coroutines-extensions:${Versions.sqlDelight}"
     const val sqlDelightAndroidDriver = "app.cash.sqldelight:android-driver:${Versions.sqlDelight}"
     const val sqlDelightNativeDriver = "app.cash.sqldelight:native-driver:${Versions.sqlDelight}"
+
+    object SqlDelight {
+        const val sqliteDriver = "app.cash.sqldelight:sqlite-driver:${Versions.sqlDelight}"
+    }
     const val sqlCipherAndroid = "net.zetetic:android-database-sqlcipher:${Versions.sqlCipher}"
     const val mongoDriverSync = "org.mongodb:mongodb-driver-sync:${Versions.mongoDriver}"
     const val mongoDriverKotlin = "org.mongodb:mongodb-driver-kotlin-coroutine:${Versions.mongoDriver}"
