@@ -2,7 +2,6 @@
 
 import Foundation
 
-/// Mock sleep session provider for SwiftUI Previews without HealthKit or KMP.
 @MainActor
 @Observable
 final class MockSleepSessionProvider: SleepSessionProviderProtocol, @unchecked Sendable {
@@ -24,7 +23,6 @@ final class MockSleepSessionProvider: SleepSessionProviderProtocol, @unchecked S
         activeSession = nil
     }
 
-    /// Resets to no active session (for Previews that need "idle" state).
     func reset() {
         activeSession = nil
     }

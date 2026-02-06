@@ -3,8 +3,11 @@
 import Foundation
 import Combine
 
-/// Mock heart rate monitor for SwiftUI Previews without HealthKit.
 final class MockHeartRateMonitor: HeartRateMonitorProtocol {
+
+    private static let updateInterval: TimeInterval = 5.0
+    private static let minBPM = 40
+    private static let maxBPM = 200
 
     private let subject = PassthroughSubject<Int, Never>()
     private var timer: Timer?
@@ -19,19 +22,21 @@ final class MockHeartRateMonitor: HeartRateMonitorProtocol {
     }
 
     init(mockBPM: Int = 72) {
-        self.mockBPM = min(200, max(40, mockBPM))
+        self.mockBPM = min(Self.maxBPM, max(Self.minBPM, mockBPM))
     }
 
-    func requestAuthorization() async throws {
-        // No-op for mock
-    }
+    func requestAuthorization() async throws {}
 
     func startMonitoring() async {
         subject.send(mockBPM)
-        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self, mockBPM] _ in
-            self?.subject.send(mockBPM)
+        await MainActor.run {
+            timer = Timer.scheduledTimer(withTimeInterval: Self.updateInterval, repeats: true) { [weak self, mockBPM] _ in
+                self?.subject.send(mockBPM)
+            }
+            if let timer = timer {
+                RunLoop.current.add(timer, forMode: .common)
+            }
         }
-        RunLoop.current.add(timer!, forMode: .common)
     }
 
     func stopMonitoring() {

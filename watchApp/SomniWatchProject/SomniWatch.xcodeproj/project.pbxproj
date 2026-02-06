@@ -8,6 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		1EDF0F122F3540560081A315 /* SomniWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 1EDF0F112F3540560081A315 /* SomniWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1EDF0F6E2F3542EF0081A315 /* TrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F6C2F3542EF0081A315 /* TrackerView.swift */; };
+		1EDF0F6F2F3542EF0081A315 /* SleepSessionProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F692F3542EF0081A315 /* SleepSessionProviderProtocol.swift */; };
+		1EDF0F702F3542EF0081A315 /* TimerRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F612F3542EF0081A315 /* TimerRingView.swift */; };
+		1EDF0F712F3542EF0081A315 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F632F3542EF0081A315 /* ContentView.swift */; };
+		1EDF0F722F3542EF0081A315 /* BreathingSphereView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F5F2F3542EF0081A315 /* BreathingSphereView.swift */; };
+		1EDF0F732F3542EF0081A315 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F642F3542EF0081A315 /* HapticFeedback.swift */; };
+		1EDF0F742F3542EF0081A315 /* SomniWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F6B2F3542EF0081A315 /* SomniWatchApp.swift */; };
+		1EDF0F752F3542EF0081A315 /* MockSleepSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F682F3542EF0081A315 /* MockSleepSessionProvider.swift */; };
+		1EDF0F762F3542EF0081A315 /* HeartRateMonitorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F662F3542EF0081A315 /* HeartRateMonitorProtocol.swift */; };
+		1EDF0F772F3542EF0081A315 /* LockIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F602F3542EF0081A315 /* LockIndicatorView.swift */; };
+		1EDF0F782F3542EF0081A315 /* MockHeartRateMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F672F3542EF0081A315 /* MockHeartRateMonitor.swift */; };
+		1EDF0F902F35A8C60081A315 /* LiquidGlass.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F8F2F35A8C60081A315 /* LiquidGlass.metal */; };
+		1EDF0F922F35A8C70081A315 /* SleepStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EDF0F912F35A8C70081A315 /* SleepStateView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +82,19 @@
 		1EDF0F112F3540560081A315 /* SomniWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SomniWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDF0F202F3540570081A315 /* SomniWatch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SomniWatch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDF0F2A2F3540570081A315 /* SomniWatch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SomniWatch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EDF0F5F2F3542EF0081A315 /* BreathingSphereView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathingSphereView.swift; sourceTree = "<group>"; };
+		1EDF0F602F3542EF0081A315 /* LockIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockIndicatorView.swift; sourceTree = "<group>"; };
+		1EDF0F612F3542EF0081A315 /* TimerRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerRingView.swift; sourceTree = "<group>"; };
+		1EDF0F632F3542EF0081A315 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = ../SomniWatch/ContentView.swift; sourceTree = SOURCE_ROOT; };
+		1EDF0F642F3542EF0081A315 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
+		1EDF0F662F3542EF0081A315 /* HeartRateMonitorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateMonitorProtocol.swift; sourceTree = "<group>"; };
+		1EDF0F672F3542EF0081A315 /* MockHeartRateMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockHeartRateMonitor.swift; sourceTree = "<group>"; };
+		1EDF0F682F3542EF0081A315 /* MockSleepSessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSleepSessionProvider.swift; sourceTree = "<group>"; };
+		1EDF0F692F3542EF0081A315 /* SleepSessionProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepSessionProviderProtocol.swift; sourceTree = "<group>"; };
+		1EDF0F6B2F3542EF0081A315 /* SomniWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SomniWatchApp.swift; path = ../SomniWatch/SomniWatchApp.swift; sourceTree = SOURCE_ROOT; };
+		1EDF0F6C2F3542EF0081A315 /* TrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerView.swift; sourceTree = "<group>"; };
+		1EDF0F8F2F35A8C60081A315 /* LiquidGlass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; name = LiquidGlass.metal; path = ../SomniWatch/Shaders/LiquidGlass.metal; sourceTree = SOURCE_ROOT; };
+		1EDF0F912F35A8C70081A315 /* SleepStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepStateView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -153,6 +179,13 @@
 		1EDF0EE52F3540540081A315 = {
 			isa = PBXGroup;
 			children = (
+				1EDF0F8F2F35A8C60081A315 /* LiquidGlass.metal */,
+				1EDF0F622F3542EF0081A315 /* Components */,
+				1EDF0F632F3542EF0081A315 /* ContentView.swift */,
+				1EDF0F652F3542EF0081A315 /* Helpers */,
+				1EDF0F6A2F3542EF0081A315 /* Providers */,
+				1EDF0F6B2F3542EF0081A315 /* SomniWatchApp.swift */,
+				1EDF0F6D2F3542EF0081A315 /* Views */,
 				1EDF0EF02F3540540081A315 /* SomniWatch */,
 				1EDF0EFE2F3540560081A315 /* SomniWatchTests */,
 				1EDF0F082F3540560081A315 /* SomniWatchUITests */,
@@ -175,6 +208,48 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		1EDF0F622F3542EF0081A315 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				1EDF0F5F2F3542EF0081A315 /* BreathingSphereView.swift */,
+				1EDF0F602F3542EF0081A315 /* LockIndicatorView.swift */,
+				1EDF0F912F35A8C70081A315 /* SleepStateView.swift */,
+				1EDF0F612F3542EF0081A315 /* TimerRingView.swift */,
+			);
+			name = Components;
+			path = ../SomniWatch/Components;
+			sourceTree = SOURCE_ROOT;
+		};
+		1EDF0F652F3542EF0081A315 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				1EDF0F642F3542EF0081A315 /* HapticFeedback.swift */,
+			);
+			name = Helpers;
+			path = ../SomniWatch/Helpers;
+			sourceTree = SOURCE_ROOT;
+		};
+		1EDF0F6A2F3542EF0081A315 /* Providers */ = {
+			isa = PBXGroup;
+			children = (
+				1EDF0F662F3542EF0081A315 /* HeartRateMonitorProtocol.swift */,
+				1EDF0F672F3542EF0081A315 /* MockHeartRateMonitor.swift */,
+				1EDF0F682F3542EF0081A315 /* MockSleepSessionProvider.swift */,
+				1EDF0F692F3542EF0081A315 /* SleepSessionProviderProtocol.swift */,
+			);
+			name = Providers;
+			path = ../SomniWatch/Providers;
+			sourceTree = SOURCE_ROOT;
+		};
+		1EDF0F6D2F3542EF0081A315 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1EDF0F6C2F3542EF0081A315 /* TrackerView.swift */,
+			);
+			name = Views;
+			path = ../SomniWatch/Views;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -446,6 +521,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EDF0F6E2F3542EF0081A315 /* TrackerView.swift in Sources */,
+				1EDF0F6F2F3542EF0081A315 /* SleepSessionProviderProtocol.swift in Sources */,
+				1EDF0F702F3542EF0081A315 /* TimerRingView.swift in Sources */,
+				1EDF0F712F3542EF0081A315 /* ContentView.swift in Sources */,
+				1EDF0F722F3542EF0081A315 /* BreathingSphereView.swift in Sources */,
+				1EDF0F732F3542EF0081A315 /* HapticFeedback.swift in Sources */,
+				1EDF0F742F3542EF0081A315 /* SomniWatchApp.swift in Sources */,
+				1EDF0F752F3542EF0081A315 /* MockSleepSessionProvider.swift in Sources */,
+				1EDF0F902F35A8C60081A315 /* LiquidGlass.metal in Sources */,
+				1EDF0F762F3542EF0081A315 /* HeartRateMonitorProtocol.swift in Sources */,
+				1EDF0F772F3542EF0081A315 /* LockIndicatorView.swift in Sources */,
+				1EDF0F782F3542EF0081A315 /* MockHeartRateMonitor.swift in Sources */,
+				1EDF0F922F35A8C70081A315 /* SleepStateView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

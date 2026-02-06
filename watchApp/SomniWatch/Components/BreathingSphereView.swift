@@ -2,70 +2,117 @@
 
 import SwiftUI
 
-/// Pulsating sphere synchronized with LFO (heart rate). Dark-mode optimized (design §12, requirements 19.1–19.2).
-struct BreathingSphereView: View {
+extension Shape {
+    func glassed() -> some View {
+        self
+            .fill(.thinMaterial)
+            .overlay {
+                self.fill(
+                    .linearGradient(
+                        colors: [
+                            .white.opacity(0.15),
+                            .white.opacity(0.10),
+                            .white.opacity(0.05),
+                            .clear,
+                            .clear,
+                            .clear
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            }
+            .overlay {
+                self.stroke(.white.opacity(0.35), lineWidth: 1.2)
+            }
+    }
+}
 
+struct BreathingSphereView: View {
     let lfoFrequency: Float
     let isScreenActive: Bool
+    var useLiquidStyle: Bool = true
+    var size: CGFloat? = nil
 
-    private var animationDuration: Double {
-        guard lfoFrequency > 0 else { return 1.0 }
-        return 1.0 / Double(lfoFrequency)
-    }
+    private static let defaultSphereDiameter: CGFloat = 80
+    private static let brightness: Double = 0.55
+    private let visualEffectBlurMax: CGFloat = 2
+    private let visualEffectHueSpeed: Double = 10
 
-    @State private var scale: CGFloat = 1.0
-    @State private var brightness: Double = 0.5
-    @State private var isAnimating = false
+    private var effectiveDiameter: CGFloat { size ?? Self.defaultSphereDiameter }
+
+    @State private var shaderStartTime = Date()
 
     var body: some View {
+        Group {
+            if useLiquidStyle {
+                sphereWithVisualEffect
+            } else {
+                sphereWithoutShader
+            }
+        }
+        .onAppear { shaderStartTime = Date() }
+    }
+
+    private var sphereWithoutShader: some View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
-
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.blue.opacity(brightness),
-                            Color.purple.opacity(brightness * 0.5),
-                        ],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 80
-                    )
-                )
-                .frame(width: 80, height: 80)
-                .scaleEffect(scale)
-                .animation(
-                    .easeInOut(duration: animationDuration).repeatForever(autoreverses: true),
-                    value: scale
-                )
+            mainCircle
         }
-        .onAppear { startBreathingAnimation() }
-        .onChange(of: isScreenActive) { _, active in
-            if active {
-                startBreathingAnimation()
-            } else {
-                stopBreathingAnimation()
+    }
+
+    @ViewBuilder
+    private var sphereWithVisualEffect: some View {
+        TimelineView(.animation) { timeline in
+            let time = timeline.date.timeIntervalSince(shaderStartTime)
+
+            ZStack {
+                Color.black
+                    .ignoresSafeArea()
+                mainCircle
+                    .visualEffect { content, _ in
+                        content
+                            .hueRotation(.degrees(time * visualEffectHueSpeed))
+                            .blur(radius: abs(CGFloat(sin(time))) * visualEffectBlurMax)
+                    }
             }
         }
     }
 
-    private func startBreathingAnimation() {
-        guard isScreenActive else { return }
-        isAnimating = true
-        scale = 1.1
-        brightness = 0.7
+    @ViewBuilder
+    private var mainCircle: some View {
+        if useLiquidStyle {
+            if #available(watchOS 26.0, *) {
+                circleBase
+                    .glassEffect(.regular.interactive(), in: Circle())
+            } else {
+                circleBase
+                    .background {
+                        Circle().glassed()
+                    }
+            }
+        } else {
+            circleBase
+        }
     }
-
-    private func stopBreathingAnimation() {
-        isAnimating = false
-        scale = 1.0
-        brightness = 0.5
+    
+    private var circleBase: some View {
+        Circle()
+            .fill(
+                RadialGradient(
+                    colors: [
+                        Color.blue.opacity(Self.brightness),
+                        Color.purple.opacity(Self.brightness * 0.5),
+                    ],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: effectiveDiameter / 2
+                )
+            )
+            .frame(width: effectiveDiameter, height: effectiveDiameter)
     }
 }
-
-// MARK: - Previews
 
 #Preview("Breathing sphere active") {
     BreathingSphereView(lfoFrequency: 100, isScreenActive: true)
@@ -73,4 +120,8 @@ struct BreathingSphereView: View {
 
 #Preview("Breathing sphere paused") {
     BreathingSphereView(lfoFrequency: 100, isScreenActive: false)
+}
+
+#Preview("Breathing background") {
+    BreathingSphereView(lfoFrequency: 100, isScreenActive: true, useLiquidStyle: true, size: 200)
 }
